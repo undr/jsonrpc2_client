@@ -3,22 +3,24 @@ defmodule JSONRPC2Client do
   Documentation for `JSONRPC2Client`.
 
   Example:
-
       alias JSONRPC2Client.Response.Result
       alias JSONRPC2Client.Response.Error
 
-      [%Result{}, %Error{}] = JSONRPC2Client.call(method, params, id)
-      |> JSONRPC2Client.call(method, params, id)
-      |> JSONRPC2Client.notify(method, params)
-      |> JSONRPC2Client.send("http://127.0.0.1:4000")
+      [%Result{}, %Error{}] =
+        method
+        |> JSONRPC2Client.call(params, id)
+        |> JSONRPC2Client.call(method, params, id)
+        |> JSONRPC2Client.notify(method, params)
+        |> JSONRPC2Client.send(
+          "http://127.0.0.1:4000",
+          headers: [%{"X-Token" => token()}],
+          recv_timeout: 3000,
+          timeout: 3000
+        )
   """
+  use JSONRPC2Client.Base
 
-  defdelegate call(method, params, id), to: JSONRPC2Client.Request
-  defdelegate call(req, method, params, id), to: JSONRPC2Client.Request
-
-  defdelegate notify(method, params), to: JSONRPC2Client.Request
-  defdelegate notify(req, method, params), to: JSONRPC2Client.Request
-
-  defdelegate send(req, url), to: JSONRPC2Client.Request, as: :execute
-  defdelegate send(req, url, headers), to: JSONRPC2Client.Request, as: :execute
+  def adapter do
+    JSONRPC2Client.Adapters.HTTP
+  end
 end
