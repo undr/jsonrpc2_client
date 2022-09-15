@@ -9,7 +9,7 @@ defmodule JSONRPC2Client.Types do
   @type params :: list() | map()
   @type req_id :: String.t() | integer()
   @type ok :: {:ok, response()} | {:ok, [response()]}
-  @type error :: {:error, {atom(), term()}}
+  @type error :: {:error, {atom(), map()}}
   @type result :: ok() | error()
   @type url :: HTTPoison.url()
   @type opts :: HTTPoison.options()

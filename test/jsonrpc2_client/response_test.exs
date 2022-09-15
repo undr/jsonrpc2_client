@@ -36,7 +36,7 @@ defmodule JSONRPC2Client.ResponseTest do
       )
 
       response = ~s[{"id":"123", "result":"value]
-      assert {:error, {:invalid_json_response, response}} == Response.parse(response)
+      assert {:error, {:invalid_json_response, %{response: response}}} == Response.parse(response)
     end
 
     test "when response is JSON array" do
@@ -56,7 +56,7 @@ defmodule JSONRPC2Client.ResponseTest do
       )
 
       response = ~s/[{"id":"123", "result":"value]/
-      assert {:error, {:invalid_json_response, response}} == Response.parse(response)
+      assert {:error, {:invalid_json_response, %{response: response}}} == Response.parse(response)
     end
   end
 end

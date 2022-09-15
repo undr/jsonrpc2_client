@@ -37,10 +37,10 @@ defmodule JSONRPC2Client.Adapters.HTTP do
         {:ok, body}
 
       {:ok, %HTTPoison.Response{status_code: code}} ->
-        {:error, {:server_error, code}}
+        {:error, {:server_error, %{code: code}}}
 
       {:error, %HTTPoison.Error{reason: reason}} ->
-        {:error, {HTTPoison.Error, reason}}
+        {:error, {HTTPoison.Error, %{reason: reason}}}
     end
   end
 
