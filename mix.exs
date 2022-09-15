@@ -21,9 +21,10 @@ defmodule JSONRPC2Client.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:poison, "~> 4.0"},
+      {:jason, "~> 1.2"},
       {:httpoison, "~> 1.8.1"},
-      {:bypass, "~> 2.1.0", only: :test}
+      {:bypass, "~> 2.1.0", only: :test},
+      {:dialyxir, "~> 1.2.0", only: [:dev, :test], runtime: false}
     ]
   end
 end

@@ -7,31 +7,31 @@ defmodule JSONRPC2Client.ResponseTest do
 
   describe ".parse" do
     test "when response is JSON object" do
-      assert %Result{id: "123", value: "value"} == Response.parse(~s[{"id":"123", "result":"value", "jsonrpc":"2.0"}])
-      assert %Result{value: "value"} == Response.parse(~s[{"id":null, "result":"value", "jsonrpc":"2.0"}])
-      assert %Result{value: "value"} == Response.parse(~s[{"result":"value", "jsonrpc":"2.0"}])
+      assert {:ok, %Result{id: "123", value: "value"}} == Response.parse(~s[{"id":"123", "result":"value", "jsonrpc":"2.0"}])
+      assert {:ok, %Result{value: "value"}} == Response.parse(~s[{"id":null, "result":"value", "jsonrpc":"2.0"}])
+      assert {:ok, %Result{value: "value"}} == Response.parse(~s[{"result":"value", "jsonrpc":"2.0"}])
 
-      assert %Error{id: "123", code: 321, message: "Msg"} == Response.parse(
+      assert {:ok, %Error{id: "123", code: 321, message: "Msg"}} == Response.parse(
         ~s[{"id":"123", "error":{"code":321, "message":"Msg"}, "jsonrpc":"2.0"}]
       )
-      assert %Error{code: 321, message: "Msg"} == Response.parse(
+      assert {:ok, %Error{code: 321, message: "Msg"}} == Response.parse(
         ~s[{"id":null, "error":{"code":321, "message":"Msg"}, "jsonrpc":"2.0"}]
       )
-      assert %Error{code: 321, message: "Msg"} == Response.parse(
+      assert {:ok, %Error{code: 321, message: "Msg"}} == Response.parse(
         ~s[{"error":{"code":321, "message":"Msg"}, "jsonrpc":"2.0"}]
       )
 
-      assert %Error{id: "123", code: 321, message: "Msg", data: "data"} == Response.parse(
+      assert {:ok, %Error{id: "123", code: 321, message: "Msg", data: "data"}} == Response.parse(
         ~s[{"id":"123", "error":{"code":321, "message":"Msg", "data":"data"}, "jsonrpc":"2.0"}]
       )
-      assert %Error{code: 321, message: "Msg", data: "data"} == Response.parse(
+      assert {:ok, %Error{code: 321, message: "Msg", data: "data"}} == Response.parse(
         ~s[{"id":null, "error":{"code":321, "message":"Msg", "data":"data"}, "jsonrpc":"2.0"}]
       )
-      assert %Error{code: 321, message: "Msg", data: "data"} == Response.parse(
+      assert {:ok, %Error{code: 321, message: "Msg", data: "data"}} == Response.parse(
         ~s[{"error":{"code":321, "message":"Msg", "data":"data"}, "jsonrpc":"2.0"}]
       )
 
-      assert %Error{message: "Invalid Response", data: %{"id" => "123", "result" => "value"}} == Response.parse(
+      assert {:ok, %Error{message: "Invalid Response", data: %{"id" => "123", "result" => "value"}}} == Response.parse(
         ~s[{"id":"123", "result":"value"}]
       )
 
@@ -40,18 +40,18 @@ defmodule JSONRPC2Client.ResponseTest do
     end
 
     test "when response is JSON array" do
-      assert [%Result{id: "123", value: "value"}] == Response.parse(~s/[{"id":"123", "result":"value", "jsonrpc":"2.0"}]/)
-      assert [%Result{value: "value"}] == Response.parse(~s/[{"id":null, "result":"value", "jsonrpc":"2.0"}]/)
-      assert [%Result{value: "value"}] == Response.parse(~s/[{"result":"value", "jsonrpc":"2.0"}]/)
+      assert {:ok, [%Result{id: "123", value: "value"}]} == Response.parse(~s/[{"id":"123", "result":"value", "jsonrpc":"2.0"}]/)
+      assert {:ok, [%Result{value: "value"}]} == Response.parse(~s/[{"id":null, "result":"value", "jsonrpc":"2.0"}]/)
+      assert {:ok, [%Result{value: "value"}]} == Response.parse(~s/[{"result":"value", "jsonrpc":"2.0"}]/)
 
-      assert [%Error{id: "123", code: 321, message: "Msg"}] == Response.parse(
+      assert {:ok, [%Error{id: "123", code: 321, message: "Msg"}]} == Response.parse(
         ~s/[{"id":"123", "error":{"code":321, "message":"Msg"}, "jsonrpc":"2.0"}]/
       )
-      assert [%Result{value: "value"}, %Error{code: 321, message: "Msg"}] == Response.parse(
+      assert {:ok, [%Result{value: "value"}, %Error{code: 321, message: "Msg"}]} == Response.parse(
         ~s/[{"result":"value", "jsonrpc":"2.0"},{"id":null, "error":{"code":321, "message":"Msg"}, "jsonrpc":"2.0"}]/
       )
 
-      assert [%Error{message: "Invalid Response", data: %{"id" => "123", "result" => "value"}}] == Response.parse(
+      assert {:ok, [%Error{message: "Invalid Response", data: %{"id" => "123", "result" => "value"}}]} == Response.parse(
         ~s/[{"id":"123", "result":"value"}]/
       )
 

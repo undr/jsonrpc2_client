@@ -1,17 +1,24 @@
-defmodule JSONRPC2Client.HTTP do
+defmodule JSONRPC2Client.Adapters.HTTP do
   require Logger
 
   use HTTPoison.Base
 
-  @default_headers %{"content-type" => "application/json"}
-
   alias JSONRPC2Client.Response
 
-  def execute(url, request, headers \\ %{}, opts \\ [])
+  @behaviour JSONRPC2Client.Adapters.Behaviour
+  @default_headers %{"content-type" => "application/json"}
+
+  @impl true
+  def execute(_url, [], _headers, _opts),
+    do: {:ok, []}
+
+  @impl true
   def execute(url, [request], headers, opts),
-    do: post_request(url, Poison.encode!(request), headers(headers), opts)
+    do: post_request(url, Jason.encode!(request), headers(headers), opts)
+
+  @impl true
   def execute(url, requests, headers, opts),
-    do: post_request(url, Poison.encode!(requests), headers(headers), opts)
+    do: post_request(url, Jason.encode!(requests), headers(headers), opts)
 
   defp post_request(url, body, headers, opts) do
     log_request(url, body, headers)
@@ -28,21 +35,18 @@ defmodule JSONRPC2Client.HTTP do
     case response do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
         {:ok, body}
-      {:ok, %HTTPoison.Response{status_code: 404}} ->
-        {:error, :not_found}
-      {:ok, %HTTPoison.Response{status_code: 401}} ->
-        {:error, :authentication_failed}
-      {:ok, %HTTPoison.Response{status_code: 500}} ->
-        {:error, :internal_server_error}
+
       {:ok, %HTTPoison.Response{status_code: code}} ->
         {:error, {:server_error, code}}
+
       {:error, %HTTPoison.Error{reason: reason}} ->
-        {:error, reason}
+        {:error, {HTTPoison.Error, reason}}
     end
   end
 
   defp handle_jsonrpc_response({:ok, response}),
     do: Response.parse(response)
+
   defp handle_jsonrpc_response(error),
     do: error
 
@@ -54,6 +58,7 @@ defmodule JSONRPC2Client.HTTP do
 
   defp log_response({:ok, %HTTPoison.Response{status_code: status, body: body, headers: headers}}),
     do: Logger.debug("[JSONRPC2 Client] <- status: #{status}, body: #{body}, headers: #{inspect(headers)}")
+
   defp log_response({:error, %HTTPoison.Error{reason: reason}}),
     do: Logger.debug("[JSONRPC2 Client] <- error: #{reason}")
 end
