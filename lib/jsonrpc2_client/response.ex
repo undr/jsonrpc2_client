@@ -30,7 +30,7 @@ defmodule JSONRPC2Client.Response do
       {:ok, build(response)}
     else
       _ ->
-        {:error, {:invalid_json_response, response}}
+        {:error, {:invalid_json_response, %{response: response}}}
     end
   end
 

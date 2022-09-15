@@ -35,7 +35,7 @@ defmodule JSONRPC2Client.Adapters.HTTPTest do
         Plug.Conn.resp(conn, 404, "")
       end
 
-      assert {:error, {:server_error, 404}} = HTTP.execute(
+      assert {:error, {:server_error, %{code: 404}}} = HTTP.execute(
         "http://localhost:51346/jsonrpc", Request.new("method", [1, 2, 3], 1), %{}, []
       )
     end
@@ -48,7 +48,7 @@ defmodule JSONRPC2Client.Adapters.HTTPTest do
         Plug.Conn.resp(conn, 401, "")
       end
 
-      assert {:error, {:server_error, 401}} = HTTP.execute(
+      assert {:error, {:server_error, %{code: 401}}} = HTTP.execute(
         "http://localhost:51346/jsonrpc", Request.new("method", [1, 2, 3], 1), %{}, []
       )
     end
@@ -61,7 +61,7 @@ defmodule JSONRPC2Client.Adapters.HTTPTest do
         Plug.Conn.resp(conn, 500, "")
       end
 
-      assert {:error, {:server_error, 500}} = HTTP.execute(
+      assert {:error, {:server_error, %{code: 500}}} = HTTP.execute(
         "http://localhost:51346/jsonrpc", Request.new("method", [1, 2, 3], 1), %{}, []
       )
     end
@@ -74,7 +74,7 @@ defmodule JSONRPC2Client.Adapters.HTTPTest do
         Plug.Conn.resp(conn, 501, "")
       end
 
-      assert {:error, {:server_error, 501}} = HTTP.execute(
+      assert {:error, {:server_error, %{code: 501}}} = HTTP.execute(
         "http://localhost:51346/jsonrpc", Request.new("method", [1, 2, 3], 1), %{}, []
       )
     end
