@@ -38,6 +38,7 @@ defmodule JSONRPC2.Client.MixProject do
       {:httpoison, "~> 2.0", optional: true},
       {:jsonrpc2_spec, "~> 0.1.0"},
       {:bypass, "~> 2.1.0", only: :test},
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
     ]
   end
 end
