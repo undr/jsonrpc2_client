@@ -1,6 +1,6 @@
-# JSONRPC2Client
+# JSONRPC2.Client
 
-JSONRPC2 Client
+HTTP client for JSONRPC 2.0 protocol.
 
 ## Installation
 
@@ -10,42 +10,24 @@ by adding `jsonrpc2_client` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:jsonrpc2_client, "~> 0.1.0"}
+    {:jsonrpc2_client, "~> 2.0.0"}
   ]
 end
 ```
 
 ## Configuration
 
-The library provides with default `JSONRPC2Client.Adapters.HTTP` adapter. Nonetheless. it's possible to use custom adapter. It can be any module which implements `JSONRPC2Client.Adapters.Behaviour` behaviour. For example, it can be adapter built by `mox` library, to make easy to test application what using this library. However, you have to create a wrapper and
+The library provides with default `JSONRPC2.Client.Adapters.Default` adapter. Nonetheless, it's possible to use custom adapter. It can be any module which implements `JSONRPC2.Client.Adapters.Behaviour` behaviour. For example, it can be adapter built by `mox` library, to make easy to test application what using this library. 
 
 ```elixir
-defmodule MyClient do
-  use JSONRPC2Client.Base, otp_app: :my_app
-end
-```
-
-```elixir
-config :my_app, MyClient, MyClient.MyAdapter
-```
-
-It's also possible explicitly to define adapter, but it won't be able to configure in runtime.
-
-```elixir
-defmodule MyClient do
-  use JSONRPC2Client.Base
-
-  def adapter do
-    MyClient.MyAdapter
-  end
-end
+config :jsonrpc2_client, :adapter, MyClient.MyAdapter
 ```
 
 ```elixir
 defmodule MyClient.MyAdapter do
-  @behaviour JSONRPC2Client.Adapters.Behaviour
+  @behaviour JSONRPC2.Client.Adapters.Behaviour
 
-  def execute(url, data, headers, opts) do
+  def execute(url, data, opts) do
     # ...
   end
 end
@@ -53,33 +35,29 @@ end
 
 ## Usage
 
+First, we collect operations and then send it in one single batch into the server.
+
 ```elixir
-alias JSONRPC2Client.Response.Result
-alias JSONRPC2Client.Response.Error
+alias JSONRPC2.Spec.Result
+alias JSONRPC2.Spec.Error
 
 [%Result{}, %Error{}] =
-  JSONRPC2Client.call("add", [100, 120], 1)
-  |> JSONRPC2Client.call("div", [120, 0], 2)
-  |> JSONRPC2Client.notify("send_event", ["user.action", %{payload: "payload"}])
-  |> JSONRPC2Client.send("http://127.0.0.1:4000")
-
-[%Result{}, %Error{}] =
-  MyClient.call("add", [100, 120], 1)
-  |> MyClient.call("div", [120, 0], 2)
-  |> MyClient.notify("send_event", ["user.action", %{payload: "payload"}])
-  |> MyClient.send("http://127.0.0.1:4000")
+  JSONRPC2.Client.call("add", [100, 120], 1)
+  |> JSONRPC2.Client.call("div", [120, 0], 2)
+  |> JSONRPC2.Client.notify("send_event", ["user.action", %{payload: "payload"}])
+  |> JSONRPC2.Client.send("http://127.0.0.1:4000")
 ```
 
 ## Testing
 
 ```elixir
-Mox.defmock(MyClient.MockAdapter, for: JSONRPC2Client.Adapters.Behaviour)
-Application.put_env(:my_app, MyClient, MyClient.MockAdapter)
+Mox.defmock(MyClient.MockAdapter, for: JSONRPC2.Client.Adapters.Behaviour)
+Application.put_env(:jsonrpc2_client, :adapter, MyClient.MockAdapter)
 
 expect(MyClient.MockAdapter, :execute, fn url, data, headers, opts ->
   # assert args if required
   # and define a return
-  {:ok, %JSONRPC2Client.Response.Result{value: "value"}}
+  {:ok, %JSONRPC2.Spec.Result{value: "value"}}
 end)
 ```
 

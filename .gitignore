@@ -27,3 +27,4 @@ jsonrpc2_client-*.tar
 /tmp
 
 mix.lock
+/.elixir_ls/

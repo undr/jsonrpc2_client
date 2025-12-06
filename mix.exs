@@ -1,12 +1,14 @@
-defmodule JSONRPC2Client.MixProject do
+defmodule JSONRPC2.Client.MixProject do
   use Mix.Project
 
   def project do
     [
       app: :jsonrpc2_client,
-      version: "0.1.0",
-      elixir: "~> 1.11",
+      version: "2.0.0",
+      elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
+      description: description(),
+      package: package(),
       deps: deps()
     ]
   end
@@ -18,13 +20,24 @@ defmodule JSONRPC2Client.MixProject do
     ]
   end
 
+  def package do
+    [
+      maintainers: ["Andrei Lepeshkin"],
+      licenses: ["MIT"],
+      links: %{"GitHub" => "https://github.com/undr/jsonrpc2_client"}
+    ]
+  end
+
+  def description do
+    "HTTP client for JSONRPC 2.0 protocol."
+  end
+
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:jason, "~> 1.2"},
-      {:httpoison, "~> 1.8.1"},
+      {:httpoison, "~> 2.0", optional: true},
+      {:jsonrpc2_spec, "~> 0.1.0"},
       {:bypass, "~> 2.1.0", only: :test},
-      {:dialyxir, "~> 1.2.0", only: [:dev, :test], runtime: false}
     ]
   end
 end
