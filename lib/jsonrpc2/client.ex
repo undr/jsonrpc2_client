@@ -19,6 +19,7 @@ defmodule JSONRPC2.Client do
         )
   """
 
+  alias JSONRPC2.Telemetry
   alias JSONRPC2.Spec.Batch
 
   import Kernel, except: [send: 2]
@@ -29,7 +30,18 @@ defmodule JSONRPC2.Client do
   defdelegate notify(batch, method, params), to: Batch
 
   def send(%Batch{calls: calls, notifies: notifies}, url, opts \\ []) do
-    adapter().execute(url, Map.values(calls) ++ notifies, opts)
+    calls_n_notifies = Map.values(calls) ++ notifies
+    meta =
+      %{
+        batch: calls_n_notifies,
+        url: url,
+        opts: opts
+      }
+
+    Telemetry.span(:client, meta, fn ->
+      res = adapter().execute(url, calls_n_notifies, opts)
+      {res, Map.merge(meta, %{res: res})}
+    end)
   end
 
   def adapter do
