@@ -4,7 +4,7 @@ defmodule JSONRPC2.Client.MixProject do
   def project do
     [
       app: :jsonrpc2_client,
-      version: "2.0.0",
+      version: "2.0.1",
       elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
       description: description(),
@@ -36,7 +36,7 @@ defmodule JSONRPC2.Client.MixProject do
   defp deps do
     [
       {:httpoison, "~> 2.0", optional: true},
-      {:jsonrpc2_spec, "~> 0.1.0"},
+      {:jsonrpc2_spec, "~> 0.1.1"},
       {:bypass, "~> 2.1.0", only: :test},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
     ]
